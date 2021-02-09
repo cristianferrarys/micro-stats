@@ -1,0 +1,17 @@
+spring:
+  application:    name: micro-stats
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_stats?serverTimezone=America/Argentina/Buenos_Aires
+    username: root
+    password: sasa
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:      ddl-auto: update
+logging:  level:    org:
+      hibernate:
+        SQL: debug
+server:
+  port: 8085
+service-fixe:
+  url: http://data.fixer.io/api
+  access_key: d739ca2b5b7201a7c58d1b5f6ad46140

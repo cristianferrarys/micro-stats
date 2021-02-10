@@ -1,5 +1,6 @@
 package com.mercado.stats.app.controller;
 
+import com.mercado.stats.app.dto.ResquestEnvioDto;
 import com.mercado.stats.app.dto.StatsDto;
 import com.mercado.stats.app.model.Stats;
 import com.mercado.stats.app.service.StatsService;
@@ -8,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,17 +21,18 @@ public class StatsController {
   @Autowired
   private StatsService statsService;
 
-  @GetMapping("/set/stats")
-  public ResponseEntity<?> getStats(@RequestParam(name = "pais", defaultValue = "NA") String pais,
-      @RequestParam(name = "distancia") Double distancia) {
-    if (pais.equals("NA")) {
-      return new ResponseEntity<>("Ingrese pais", HttpStatus.BAD_REQUEST);
+  @PostMapping("/envio")
+  public ResponseEntity<?> getStats(@RequestBody final ResquestEnvioDto req) {
+    try {
+      Stats st = new Stats();
+      st.setPais(req.getPais());
+      st.setDistancia(req.getDistancia());
+      statsService.guardarStats(st);
+      return new ResponseEntity<>("Ok", HttpStatus.OK);
+    } catch (Exception e) {
+      e.getMessage();
+      return new ResponseEntity<>("Error ", HttpStatus.BAD_GATEWAY);
     }
-    Stats st = new Stats();
-    st.setPais(pais);
-    st.setDistancia(distancia);
-    statsService.guardarStats(st);
-    return new ResponseEntity<>("Ok", HttpStatus.OK);
   }
 
   @GetMapping("/stats")
@@ -41,13 +44,10 @@ public class StatsController {
       promedio = promedio + stats.getInvocaciones();
       suma = suma + stats.getDistancia() * stats.getInvocaciones();
     }
-    Double promedioFinal = suma / promedio;
-
+    final Double promedioFinal = suma / promedio;
     StatsDto statsDto = new StatsDto();
     statsDto.setStats(st);
     statsDto.setPromedio(promedioFinal);
-
-    System.out.println("max " + st);
     return new ResponseEntity<>(statsDto, HttpStatus.OK);
   }
 }

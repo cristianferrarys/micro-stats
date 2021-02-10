@@ -11,7 +11,14 @@ logging:  level:    org:
       hibernate:
         SQL: debug
 server:
-  port: 8085
+  port: ${PORT:0}
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
 service-fixe:
   url: http://data.fixer.io/api
   access_key: d739ca2b5b7201a7c58d1b5f6ad46140
